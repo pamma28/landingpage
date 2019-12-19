@@ -1,6 +1,7 @@
 "use strict";
 
 module.exports = function(AuthService) {
+  let app = require("../../server/server");
   // ================================================================
   //            checkPhoneNumber
   // ================================================================
@@ -39,7 +40,7 @@ module.exports = function(AuthService) {
             if (err) {
               throw err;
             } else {
-              resolve(res.length > 0 ? true : false);
+              resolve(res.length > 0 ? false : true);
             }
           }
         );
@@ -75,7 +76,7 @@ module.exports = function(AuthService) {
 
   AuthService.checkEmail = async email => {
     try {
-      if (!email || typeof phoneNumber != "string") {
+      if (!email || typeof email != "string") {
         throw new Error("params incomplete or not a string");
       }
       const User = app.models.User;
@@ -89,7 +90,7 @@ module.exports = function(AuthService) {
             if (err) {
               throw err;
             } else {
-              resolve(res.length > 0 ? true : false);
+              resolve(res.length > 0 ? false : true);
             }
           }
         );
