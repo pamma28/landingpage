@@ -29,6 +29,11 @@ module.exports = function(AuthService) {
       if (!phoneNumber || isNaN(phoneNumber)) {
         throw new Error("phone number is not a number");
       }
+      if (phoneNumber.length > 13) {
+        throw new Error(
+          "please input valid phone number with maximum 13 number"
+        );
+      }
 
       let subNumber = phoneNumber.substr(0, 2);
       if (
