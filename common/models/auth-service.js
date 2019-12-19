@@ -144,7 +144,7 @@ module.exports = function(AuthService) {
             if (err) {
               throw err;
             } else {
-              resolve(res ? false : true);
+              resolve(res ? true : false);
             }
           }
         );
