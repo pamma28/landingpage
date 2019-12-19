@@ -161,7 +161,8 @@ module.exports = function(AuthService) {
             firstName: params.firstName,
             lastName: params.lastName,
             birthDate: params.birthDate,
-            gender: params.gender
+            gender: params.gender,
+            createdAt: new Date()
           },
           (err, res) => {
             if (err) {
