@@ -9,7 +9,7 @@ module.exports = function(AuthService) {
     accepts: [
       {
         arg: "phoneNumber",
-        type: "Object",
+        type: "string",
         required: true
       }
     ],
@@ -26,7 +26,7 @@ module.exports = function(AuthService) {
 
   AuthService.checkPhoneNumber = async phoneNumber => {
     try {
-      if (!phoneNumber || typeof phoneNumber != "number") {
+      if (!phoneNumber || isNaN(phoneNumber)) {
         throw new Error("params incomplete or not a number");
       }
       const User = app.models.User;
