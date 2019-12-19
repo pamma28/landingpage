@@ -101,4 +101,93 @@ module.exports = function(AuthService) {
       throw e.message;
     }
   };
+
+  // ================================================================
+  //              register
+  // ================================================================
+  AuthService.remoteMethod("register", {
+    accepts: [
+      {
+        arg: "params",
+        type: "object",
+        required: true,
+        http: {
+          source: "body"
+        }
+      }
+    ],
+    returns: {
+      arg: "data",
+      type: "object",
+      root: true
+    },
+    http: {
+      path: "/register",
+      verb: "post"
+    }
+  });
+
+  AuthService.register = async params => {
+    try {
+      const User = app.models.User;
+      const instantiate = await new Promise(resolve => {
+        User.create(
+          {
+            email: params.email,
+            phoneNumber: params.phoneNumber,
+            firstName: params.firstName,
+            lastName: params.lastName,
+            birthDate: params.birthDate,
+            gender: params.gender
+          },
+          (err, res) => {
+            if (err) {
+              throw err;
+            } else {
+              resolve(res ? false : true);
+            }
+          }
+        );
+      });
+
+      return { success: instantiate };
+    } catch (e) {
+      throw e.message;
+    }
+  };
+
+  // ================================================================
+  //              registrationData
+  // ================================================================
+  AuthService.remoteMethod("registrationData", {
+    accepts: [],
+    returns: {
+      arg: "data",
+      type: "object",
+      root: true
+    },
+    http: {
+      path: "/registrationData",
+      verb: "get"
+    }
+  });
+
+  AuthService.registrationData = async params => {
+    try {
+      const User = app.models.User;
+      const list = await new Promise(resolve => {
+        User.find({}, (err, res) => {
+          if (err) {
+            throw err;
+          } else {
+            resolve(res);
+          }
+        });
+      });
+
+      return list;
+    } catch (e) {
+      throw e.message;
+    }
+  };
 };
