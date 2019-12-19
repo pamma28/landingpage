@@ -89,17 +89,19 @@ module.exports = function(AuthService) {
   AuthService.checkEmail = async email => {
     try {
       if (!email || typeof email != "string") {
-        throw new Error("email invalid or not a string");
+        return Promise.reject({
+          message: "your email invalid or not a string"
+        });
       }
 
       // check email regex
       let regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       if (!regex.test(email)) {
-        throw new Error("your email format is invalid.");
+        return Promise.reject({ message: "your email format is invalid" });
       }
 
       const User = app.models.User;
-      const valid = await new Promise(resolve => {
+      const valid = await new Promise((resolve, reject) => {
         User.find(
           {
             where: { email: email },
@@ -107,7 +109,7 @@ module.exports = function(AuthService) {
           },
           (err, res) => {
             if (err) {
-              throw err;
+              reject(err);
             } else {
               resolve(res.length > 0 ? false : true);
             }
@@ -116,7 +118,7 @@ module.exports = function(AuthService) {
       });
 
       if (!valid) {
-        throw new Error("email is already registered");
+        return Promise.reject({ message: "email is already registered" });
       }
 
       return { valid: valid };
@@ -153,7 +155,7 @@ module.exports = function(AuthService) {
   AuthService.register = async params => {
     try {
       const User = app.models.User;
-      const instantiate = await new Promise(resolve => {
+      const instantiate = await new Promise((resolve, reject) => {
         User.create(
           {
             email: params.email,
@@ -166,7 +168,7 @@ module.exports = function(AuthService) {
           },
           (err, res) => {
             if (err) {
-              throw err;
+              reject(err);
             } else {
               resolve(res ? true : false);
             }
