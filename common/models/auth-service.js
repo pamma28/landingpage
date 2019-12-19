@@ -27,26 +27,38 @@ module.exports = function(AuthService) {
   AuthService.checkPhoneNumber = async phoneNumber => {
     try {
       if (!phoneNumber || isNaN(phoneNumber)) {
-        throw new Error("params incomplete or not a number");
+        throw new Error("phone number is not a number");
       }
-      const User = app.models.User;
-      const valid = await new Promise(resolve => {
-        User.find(
-          {
-            where: { phoneNumber: phoneNumber },
-            fields: ["id"]
-          },
-          (err, res) => {
-            if (err) {
-              throw err;
-            } else {
-              resolve(res.length > 0 ? false : true);
-            }
-          }
-        );
-      });
 
-      return { valid: valid };
+      let subNumber = phoneNumber.substr(0, 2);
+      if (
+        new String(subNumber).valueOf() === new String("08").valueOf() ||
+        new String(subNumber).valueOf() === new String("62").valueOf()
+      ) {
+        const User = app.models.User;
+        const valid = await new Promise(resolve => {
+          User.find(
+            {
+              where: { phoneNumber: phoneNumber },
+              fields: ["id"]
+            },
+            (err, res) => {
+              if (err) {
+                throw err;
+              } else {
+                resolve(res.length > 0 ? false : true);
+              }
+            }
+          );
+        });
+
+        if (!valid) {
+          throw new Error("phone number is already registered");
+        }
+        return { valid: valid };
+      } else {
+        throw new Error("phone number format is invalid, use 08 or 62");
+      }
     } catch (e) {
       throw e.message;
     }
@@ -77,8 +89,15 @@ module.exports = function(AuthService) {
   AuthService.checkEmail = async email => {
     try {
       if (!email || typeof email != "string") {
-        throw new Error("params incomplete or not a string");
+        throw new Error("email invalid or not a string");
       }
+
+      // check email regex
+      let regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if (!regex.test(email)) {
+        throw new Error("your email format is invalid.");
+      }
+
       const User = app.models.User;
       const valid = await new Promise(resolve => {
         User.find(
@@ -95,6 +114,10 @@ module.exports = function(AuthService) {
           }
         );
       });
+
+      if (!valid) {
+        throw new Error("email is already registered");
+      }
 
       return { valid: valid };
     } catch (e) {
