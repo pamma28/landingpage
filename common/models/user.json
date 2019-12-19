@@ -1,7 +1,7 @@
 {
   "name": "User",
   "base": "PersistedModel",
-  "idInjection": false,
+  "idInjection": true,
   "options": {
     "validateUpsert": true
   },
@@ -12,6 +12,7 @@
     "id": {
       "type": "Number",
       "id": true,
+      "generated": true,
       "required": false,
       "length": null,
       "precision": 10,
